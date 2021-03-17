@@ -1,4 +1,5 @@
 <template>
+  <!-- component标签创建动态组件，is属性指向谁，就显示哪个组件 -->
   <component :is="type" v-bind="linkProps(to)">
     <slot />
   </component>
