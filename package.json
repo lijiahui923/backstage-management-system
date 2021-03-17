@@ -1,10 +1,10 @@
 {
-  "name": "vue-admin-template",
-  "version": "4.4.0",
-  "description": "A vue admin template with Element UI & axios & iconfont & permission control & lint",
-  "author": "Pan <panfree23@gmail.com>",
+  "name": "backstage-management-system",
+  "version": "1.0.0",
+  "description": "This is a minimalist vue admin management background. It is written based on the basic template of the big pants.",
+  "author": "ljh <lijiahui0063@163.com>",
   "scripts": {
-    "dev": "vue-cli-service serve",
+    "serve": "vue-cli-service serve",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
     "preview": "node build/index.js --preview",
