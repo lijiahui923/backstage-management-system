@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="120px">
+    <!-- <el-form ref="form" :model="form" label-width="120px">
       <el-form-item label="Activity name">
         <el-input v-model="form.name" />
       </el-form-item>
@@ -43,12 +43,19 @@
         <el-button type="primary" @click="onSubmit">Create</el-button>
         <el-button @click="onCancel">Cancel</el-button>
       </el-form-item>
-    </el-form>
+    </el-form> -->
+    <g-form
+      :model="form"
+      :form-item-config="formItemConfig"
+    />
   </div>
 </template>
 
 <script>
+import GForm from './components/GForm'
 export default {
+  name: 'Form',
+  components: { GForm },
   data() {
     return {
       form: {
@@ -60,7 +67,15 @@ export default {
         type: [],
         resource: '',
         desc: ''
-      }
+      },
+      formItemConfig: [
+        {
+          type: 'el-input',
+          label: '名称',
+          props: 'name',
+          placeholder: '请输入名称'
+        }
+      ]
     }
   },
   methods: {

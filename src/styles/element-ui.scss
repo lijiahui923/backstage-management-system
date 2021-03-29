@@ -47,3 +47,13 @@
 .el-range-separator {
   box-sizing: content-box;
 }
+
+
+// 解决el-table错位
+body .el-table {
+  th.gutter,
+  colgroup.gutter {
+      display: block !important;
+      width: 6px !important;
+  }
+}
