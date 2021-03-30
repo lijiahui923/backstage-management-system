@@ -45,13 +45,13 @@ export default {
     $attrs: {
       immediate: true,
       deep: true,
-      handler({ total, currentPage, pageSize }) {
-        const props = Object.assign({}, { total, currentPage, pageSize })
+      handler({ total, currentPage, pages }) {
+        const props = Object.assign({}, { total, currentPage, pages })
         if (typeof total === 'string') {
           this.paginationProps.total = Number(total)
         }
         this.pNum = currentPage
-        this.pSize = pageSize
+        this.pSize = pages
         this.paginationProps = props
       }
     }
@@ -59,7 +59,7 @@ export default {
   created() {
     const { $attrs } = this
     this.pNum = $attrs.currentPage
-    this.pSize = $attrs.pageSize
+    this.pSize = $attrs.pages
   },
   methods: {
     // 每页条数发生改变
@@ -86,7 +86,7 @@ export default {
       this.$emit('next-click', pageNum)
     },
     change() {
-      this.$emit('change', this.pNum, this.pSize)
+      this.$emit('pageChange', this.pNum, this.pSize)
     }
   }
 }

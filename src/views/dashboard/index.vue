@@ -1,71 +1,41 @@
 <template>
   <div class="dashboard-container">
-    <!-- <MyInput v-model="name" :disabled="disabled">
+    <MyInput v-model="name" :disabled="disabled">
       <template slot="prepend">Http://</template>
       <i
+        slot="suffix"
         class="el-icon-edit el-input__icon"
-        slot="suffix">
-      </i>
-    </MyInput> -->
-    <!-- <el-input v-model="inputVal" /> -->
-    <CTable :columns="columns" :data="tableData" @select="selectCurrentRow" :paginationConfig="paginationConfig">
-      <template v-slot:expand="props" type="expand">
+      />
+    </MyInput>
+    <CTable :columns="columns" :data="tableData" :pagination-config="paginationConfig" @select="selectCurrentRow" @pageChange="pageChange">
+      <template v-slot:expand="{ row }" type="expand">
         <el-form label-position="left" inline class="demo-table-expand">
           <el-form-item label="商品名称">
-            <span>{{ props.row.name }}</span>
-          </el-form-item>
-          <el-form-item label="所属店铺">
-            <span>{{ props.row.shop }}</span>
-          </el-form-item>
-          <el-form-item label="商品 ID">
-            <span>{{ props.row.id }}</span>
-          </el-form-item>
-          <el-form-item label="店铺 ID">
-            <span>{{ props.row.shopId }}</span>
-          </el-form-item>
-          <el-form-item label="商品分类">
-            <span>{{ props.row.category }}</span>
-          </el-form-item>
-          <el-form-item label="店铺地址">
-            <span>{{ props.row.address }}</span>
-          </el-form-item>
-          <el-form-item label="商品描述">
-            <span>{{ props.row.desc }}</span>
+            <span>{{ row.name }}</span>
           </el-form-item>
         </el-form>
       </template>
-      <div slot="append" style="height: 30px">
+      <div slot="append">
         <div>99999999999</div>
       </div>
+      <template v-slot:operate="{ row, $index }">
+        <el-button type="primary" @click="clickBtn(row, $index)">主要按钮</el-button>
+      </template>
     </CTable>
   </div>
 </template>
 
 <script>
 // import { mapGetters } from 'vuex'
-// import MyInput from './MyInput'
+import MyInput from './MyInput'
 import CTable from './c-table'
 export default {
   name: 'Dashboard',
-  components: { CTable },
-  // computed: {
-  //   ...mapGetters([
-  //     'name'
-  //   ])
-  // },
-  watch: {
-    // name: {
-    //   handler(val) {
-    //     console.log(val)
-    //   },
-    //   immediate: true
-    // }
-  },
-  // eslint-disable-next-line vue/order-in-components
+  components: { CTable, MyInput },
   data() {
     return {
-      // name: '123',
-      // disabled: false
+      name: '123',
+      disabled: false,
       columns: [
         {
           type: 'selection'
@@ -76,6 +46,9 @@ export default {
         {
           label: '姓名',
           prop: 'name'
+        },
+        {
+          type: 'operate'
         }
       ],
       tableData: [
@@ -85,24 +58,21 @@ export default {
       ],
       paginationConfig: {
         total: 30,
-        currentPage: 1,
-        pageSize: 10
+        pages: 10,
+        currentPage: 1
       }
     }
   },
-  // mounted() {
-  //   console.log(this.$refs.MyInput)
-  // },
-  created() {
-    // this.getRef()
-  },
   methods: {
     selectCurrentRow(selection, row) {
-      console.log(selection, row)
+      console.log(this.name, selection, row)
+    },
+    pageChange(pageNum, pagePage) {
+      console.log(pageNum, pagePage)
+    },
+    clickBtn(row, $index) {
+      console.log(row.name, $index)
     }
-    // getRef() {
-    //   console.log(this.$refs.MyInput)
-    // }
   }
 }
 </script>

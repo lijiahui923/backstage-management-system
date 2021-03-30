@@ -1,7 +1,6 @@
 <script>
 import methods from './mixins/table-methods'
 import CPagination from './components/CPagination'
-import { forEach } from 'mock/user'
 const defaultProps = {
   border: true,
   'highlight-current-row': true,
@@ -40,7 +39,18 @@ export default {
       const columns = this.renderColumns(h)
       const $this = this
       const props = Object.assign(defaultProps, $attrs, { data: this.data })
-      console.log(this.$slots)
+      const slots = []
+      for (const s in this.$slots) {
+        slots.push(
+          h(
+            'template',
+            {
+              slot: s
+            },
+            this.$slots[s]
+          )
+        )
+      }
       return h(
         'el-table',
         {
@@ -53,13 +63,7 @@ export default {
           scopedSlots: $this.$scopedSlots,
           ref: $this.elTableRef
         },
-        [h(
-          'template',
-          {
-            slot: 'append'
-          },
-          this.$slots.append
-        ), ...columns]
+        [...slots, ...columns]
       )
     },
     renderColumns(h) {
@@ -113,22 +117,35 @@ export default {
           props,
           scopedSlots: {
             default: props => {
-              console.log(props)
               return self.$scopedSlots['expand'](props)
             }
           }
         }
       )
     },
-    renderColumnForOPerate(h, column) {},
+    renderColumnForOPerate(h, column) {
+      const self = this
+      const props = Object.assign({}, column, { label: '操作 ' })
+      return h(
+        'el-table-column',
+        {
+          props,
+          scopedSlots: {
+            default: props => {
+              return self.$scopedSlots.operate(props)
+            }
+          }
+        }
+      )
+    },
     renderPagination(h) {
-      const { $listeners } = this
+      console.log(this.paginationConfig, this.$listeners)
       if (this.paginationConfig) {
         return h(
           'CPagination',
           {
             attrs: this.paginationConfig,
-            on: $listeners
+            on: this.$listeners
           }
         )
       }

@@ -1,47 +1,55 @@
 <script>
-// import { defaults } from 'node_modules/js-cookie/src/js.cookie'
 export default {
   name: 'MyInput',
   inheritAttrs: false,
   props: {
-    // name: {
-    //   require: true
-    // }
+    value: {
+      type: String,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      inputVal: ''
+    }
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(val) {
+        this.inputVal = val
+      }
+    }
   },
   render(h) {
-    console.log(this.$scopedSlots, this.props)
     const self = this
-    // const scopedSlots = {
-    //   default: props => this.$scopedSlots(props)
-    // }
-    // for (const slot in this.$slots) {
-    //   scopedSlots[slot] = props => self.$scopedSlots(props)
-    // }
-    // console.log(scopedSlots)
+    const slots = []
+    for (const s in this.$slots) {
+      slots.push(
+        h(
+          'template',
+          {
+            slot: s
+          },
+          this.$slots[s]
+        )
+      )
+    }
+    const props = Object.assign({}, { value: self.inputVal }, self.$attrs)
     return h(
       'el-input',
       {
-        props: {
-          ...self.$attrs
-        },
+        props,
         on: {
-          ...self.$listeners
-        },
-        scopedSlots: {
-        //   default: function(props) {
-        //     return h('span', props.text)
-        //   }
-        //   prepend: props => this.$scopedSlots.prepend(props)
-        //   prepend(prop) {
-        //     return prop
-        //   }
+          ...self.$listeners,
+          input: (e) => {
+            self.inputVal = e
+            self.$emit('input', e)
+          }
         }
-      }
+      },
+      slots
     )
   }
 }
 </script>
-
-<style>
-
-</style>
