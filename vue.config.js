@@ -39,7 +39,7 @@ module.exports = {
     // 配置多个跨域
     proxy: {
       '/dev-api': {
-        target: 'http://172.11.11.11:7071',
+        target: 'https://www.acid02.com/api',
         changeOrigin: true,
         // ws: true,//websocket支持
         secure: false,

@@ -86,19 +86,91 @@ export default {
         !_column.fixed && (_column.fixed = 'left')
       }
       const scopedSlots = {}; const slots = []
+      console.log(this.$slots, this.$scopedSlots)
       if (_column.slots) {
-        const slotName = _column.slots.default
+        const slotName = _column.slots.default || _column.slots
         const scopedSlot = this.$scopedSlots[slotName]
         const slot = this.$slots[slotName]
-        if (scopedSlot) {
-          scopedSlots.default = props => {
-            return scopedSlot(props)
-          }
-        }
-        if (slot) {
-          slots.push(slot)
-        }
+        console.log(this.$scopedSlots, _column.slots)
+        // if (typeof _column.slots === 'object') {
+        // for (const key in _column.slots) {
+        //   const scopedSlots = this.$scopedSlots[_column.slots[key]]
+        //   console.log(_column.slots[key])
+        //   scopedSlots[key] = props => {
+        //     return scopedSlots(props)
+        //   }
+        // }
+        // const slotName = [_column.slots.default]
+        // console.log(slotName)
+        // const scopedSlot = this.$scopedSlots[slotName]
+        // const slotFn = []
+        // slotName.forEach(name => {
+        //   slotFn.push(this.$scopedSlots[name])
+        // })
+        // console.log(slotFn)
+        // scopedS.default = props => {
+        //   return scopedS(props)
+        // }
+        // console.log(_column.slots.default)
+        // const slotD = _column.slots.default
+        // const scopedS = this.$scopedSlots[slotD]
+        // console.log(scopedS)
+        // const slotH = _column.slots.header
+        // const scopedSH = this.$scopedSlots[slotH]
+        // if (scopedSH || scopedS) {
+        // scopedS.default = props => {
+        //   return scopedS(props)
+        // }
+        // scopedSH.header = props => {
+        //   return scopedSH(props)
+        // }
+        // scopedSlots[_column.slots.type] = props => {
+        //   return scopedSlot(props)
+        // }
+        // scopedSlots[_column.slots.type] = props => {
+        //   return scopedSlot(props)
+        // }
+        // [_column.slots.type] = props => {
+        //   return h(
+        //     'template',
+        //     {
+        //       scopedSlots: {
+        //         header: props => {
+        //           return _column.slots.type(props)
+        //         }
+        //       }
+        //     }
+        //   )
+        // }
+        // }
+        // } else {
+        //   if (scopedSlot) {
+        //     scopedSlots.default = props => {
+        //       return scopedSlot(props)
+        //     }
+        //   }
+        // }
+        // if (slot) {
+        //   slots.push(slot)
+        // }
       }
+      // if (_column.slots) {
+      //   const slotName = _column.slots.default || _column.slots
+      //   const scopedSlot = this.$scopedSlots[slotName]
+      //   const slot = this.$slots[slotName]
+      //   console.log(scopedSlot)
+      //   if (scopedSlot) {
+      //     scopedSlots.default = props => {
+      //       return scopedSlot(props)
+      //     }
+      //     scopedSlots.header = props => {
+      //       return scopedSlot(props)
+      //     }
+      //   }
+      //   if (slot) {
+      //     slots.push(slot)
+      //   }
+      // }
       return h(
         'el-table-column',
         {
@@ -139,7 +211,6 @@ export default {
       )
     },
     renderPagination(h) {
-      console.log(this.paginationConfig, this.$listeners)
       if (this.paginationConfig) {
         return h(
           'CPagination',

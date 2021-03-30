@@ -22,3 +22,11 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function userInfoApi(params) {
+  return request({
+    url: '/userInfo',
+    method: 'get',
+    params
+  })
+}

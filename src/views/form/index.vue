@@ -44,18 +44,18 @@
         <el-button @click="onCancel">Cancel</el-button>
       </el-form-item>
     </el-form> -->
-    <g-form
+    <!-- <g-form
       :model="form"
       :form-item-config="formItemConfig"
-    />
+    /> -->
   </div>
 </template>
 
 <script>
-import GForm from './components/GForm'
+// import GForm from './components/GForm'
 export default {
   name: 'Form',
-  components: { GForm },
+  // components: { GForm },
   data() {
     return {
       form: {
