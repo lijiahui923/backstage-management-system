@@ -118,12 +118,12 @@ export default {
           label: '输入框',
           prop: 'name'
         },
-        {
-          slots: {
-            default: 'select',
-            header: 'selectHeader'
-          }
-        },
+        // {
+        //   slots: {
+        //     default: 'select',
+        //     header: 'selectHeader'
+        //   }
+        // },
         {
           type: 'operate'
         }

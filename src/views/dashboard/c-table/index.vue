@@ -28,7 +28,7 @@ export default {
   },
   data() {
     return {
-      hideColumnOptions: [],
+      hideColumnsOptions: [],
       isFalse: false,
       elTableRef: 'EL_TABLE_REF'
     }
@@ -68,15 +68,32 @@ export default {
     },
     renderColumns(h) {
       const columns = []
-      this.columns.forEach(column => {
-        if (column.type === 'expand') {
-          columns.push(this.renderColumnForExpand(h, column))
-        } else if (column.type === 'operate') {
-          columns.push(this.renderColumnForOPerate(h, column))
-        } else {
-          columns.push(this.renderColumn(h, column))
+      // this.columns.forEach((column) => {
+      // console.log(!this.hideColumnsOptions.includes(column.prop))
+      //   if (!this.hideColumnsOptions.includes(column.prop)) {
+      //     continue
+      //   }
+      //   if (column.type === 'expand') {
+      //     columns.push(this.renderColumnForExpand(h, column))
+      //   } else if (column.type === 'operate') {
+      //     columns.push(this.renderColumnForOPerate(h, column))
+      //   } else {
+      //     columns.push(this.renderColumn(h, column))
+      //   }
+      // })
+      for (let index = 0; index < this.columns.length; index++) {
+        if (!this.hideColumnsOptions.includes(this.columns[index].prop)) {
+          continue
         }
-      })
+        console.log(this.hideColumnsOptions.includes(this.columns[index].prop))
+        if (this.columns[index].type === 'expand') {
+          columns.push(this.renderColumnForExpand(h, this.columns[index]))
+        } else if (this.columns[index].type === 'operate') {
+          columns.push(this.renderColumnForOPerate(h, this.columns[index]))
+        } else {
+          columns.push(this.renderColumn(h, this.columns[index]))
+        }
+      }
       return columns
     },
     renderColumn(h, column) {
@@ -108,14 +125,10 @@ export default {
           slots.push(slot)
         }
       }
-      console.log(!!this.hideColumnOptions.includes(_column.prop))
       return h(
         'el-table-column',
         {
           props: _column,
-          'class': {
-            isHide: !!this.hideColumnOptions.includes(_column.prop)
-          },
           scopedSlots: Object.assign({}, scopedSlots, scopedSlotsList)
         },
         slots
@@ -169,6 +182,11 @@ export default {
     // 渲染隐藏列
     renderPopver(h) {
       const columnList = this.columns.filter(item => !item.type && item.label)
+      // console.log(this.hideColumnsOptions)
+      // this.hideColumnsOptions = columnsList.map(item => {
+      //   return item.prop || item.type
+      // })
+      // console.log(this.hideColumnsOptions)
       const props = { columnList }
       return h(
         'TrendsTable',
@@ -176,7 +194,8 @@ export default {
           props,
           on: {
             changeIsFalse: (val) => {
-              this.hideColumnOptions = val
+              this.hideColumnsOptions = val
+              console.log(this.hideColumnsOptions)
             }
           }
         }
@@ -197,7 +216,4 @@ export default {
 </script>
 
 <style scoped>
-.isHide {
-  display: none;
-}
 </style>
