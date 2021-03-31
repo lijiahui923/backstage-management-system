@@ -29,7 +29,6 @@ export default {
   },
   data() {
     return {
-      selfColumns: [],
       elTableRef: 'EL_TABLE_REF'
     }
   },
@@ -81,105 +80,43 @@ export default {
     },
     renderColumn(h, column) {
       const _column = Object.assign({}, column)
+      // 如果类型等于selection复选框固定在左边
       if (_column.type === 'selection') {
         _column.label = ''
         !_column.fixed && (_column.fixed = 'left')
       }
-      const scopedSlots = {}; const slots = []
-      console.log(this.$slots, this.$scopedSlots)
-      if (_column.slots) {
-        const slotName = _column.slots.default || _column.slots
+      const scopedSlots = {}; const scopedSlotsList = {}; const slots = []
+      // 如果类型是一个对象说明有多个插槽需要循环渲染，其他的就是一个渲染默认的
+      if (_column.slots && typeof _column.slots === 'object') {
+        for (const key in _column.slots) {
+          const scopedSlots = this.$scopedSlots[_column.slots[key]]
+          scopedSlotsList[key] = props => {
+            return scopedSlots(props)
+          }
+        }
+      } else {
+        const slotName = _column.slots
         const scopedSlot = this.$scopedSlots[slotName]
         const slot = this.$slots[slotName]
-        console.log(this.$scopedSlots, _column.slots)
-        // if (typeof _column.slots === 'object') {
-        // for (const key in _column.slots) {
-        //   const scopedSlots = this.$scopedSlots[_column.slots[key]]
-        //   console.log(_column.slots[key])
-        //   scopedSlots[key] = props => {
-        //     return scopedSlots(props)
-        //   }
-        // }
-        // const slotName = [_column.slots.default]
-        // console.log(slotName)
-        // const scopedSlot = this.$scopedSlots[slotName]
-        // const slotFn = []
-        // slotName.forEach(name => {
-        //   slotFn.push(this.$scopedSlots[name])
-        // })
-        // console.log(slotFn)
-        // scopedS.default = props => {
-        //   return scopedS(props)
-        // }
-        // console.log(_column.slots.default)
-        // const slotD = _column.slots.default
-        // const scopedS = this.$scopedSlots[slotD]
-        // console.log(scopedS)
-        // const slotH = _column.slots.header
-        // const scopedSH = this.$scopedSlots[slotH]
-        // if (scopedSH || scopedS) {
-        // scopedS.default = props => {
-        //   return scopedS(props)
-        // }
-        // scopedSH.header = props => {
-        //   return scopedSH(props)
-        // }
-        // scopedSlots[_column.slots.type] = props => {
-        //   return scopedSlot(props)
-        // }
-        // scopedSlots[_column.slots.type] = props => {
-        //   return scopedSlot(props)
-        // }
-        // [_column.slots.type] = props => {
-        //   return h(
-        //     'template',
-        //     {
-        //       scopedSlots: {
-        //         header: props => {
-        //           return _column.slots.type(props)
-        //         }
-        //       }
-        //     }
-        //   )
-        // }
-        // }
-        // } else {
-        //   if (scopedSlot) {
-        //     scopedSlots.default = props => {
-        //       return scopedSlot(props)
-        //     }
-        //   }
-        // }
-        // if (slot) {
-        //   slots.push(slot)
-        // }
+        if (scopedSlot) {
+          scopedSlots.default = props => {
+            return scopedSlot(props)
+          }
+        }
+        if (slot) {
+          slots.push(slot)
+        }
       }
-      // if (_column.slots) {
-      //   const slotName = _column.slots.default || _column.slots
-      //   const scopedSlot = this.$scopedSlots[slotName]
-      //   const slot = this.$slots[slotName]
-      //   console.log(scopedSlot)
-      //   if (scopedSlot) {
-      //     scopedSlots.default = props => {
-      //       return scopedSlot(props)
-      //     }
-      //     scopedSlots.header = props => {
-      //       return scopedSlot(props)
-      //     }
-      //   }
-      //   if (slot) {
-      //     slots.push(slot)
-      //   }
-      // }
       return h(
         'el-table-column',
         {
           props: _column,
-          scopedSlots
+          scopedSlots: Object.assign({}, scopedSlots, scopedSlotsList)
         },
         slots
       )
     },
+    // 渲染展开列
     renderColumnForExpand(h, column) {
       const self = this
       const props = Object.assign({}, column, { label: '' })
@@ -195,6 +132,7 @@ export default {
         }
       )
     },
+    // 渲染操作列
     renderColumnForOPerate(h, column) {
       const self = this
       const props = Object.assign({}, column, { label: '操作 ' })
@@ -210,6 +148,7 @@ export default {
         }
       )
     },
+    // 分页如果this.paginationConfig就渲染
     renderPagination(h) {
       if (this.paginationConfig) {
         return h(
