@@ -31,6 +31,10 @@ export default {
     columnList: {
       type: Array,
       default: () => []
+    },
+    hideColumnsOptions: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -46,7 +50,14 @@ export default {
     columnList: {
       immediate: true,
       handler(list) {
+        // this.tableList = list
         this.checkList = list
+      }
+    },
+    hideColumnsOptions: {
+      immediate: true,
+      handler(val) {
+        this.tableList = val
       }
     }
   },
@@ -54,7 +65,7 @@ export default {
   created() {},
   methods: {
     checkboxChange(val) {
-      this.$emit('changeIsFalse', val)
+      this.$emit('changeIsFalse', val, this.val)
     }
   }
 }

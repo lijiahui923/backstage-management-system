@@ -33,6 +33,31 @@ export default {
       elTableRef: 'EL_TABLE_REF'
     }
   },
+  watch: {
+    columns: {
+      immediate: true,
+      handler(val) {
+        // console.log(val)
+        const columnList = val.filter(item => !item.type && item.label)
+      // console.log(this.hideColumnsOptions)
+      // this.hideColumnsOptions = columnsList.map(item => {
+      //   return item.prop || item.type
+      // })
+      // this.hideColumnsOptions = columnList.find(item => {
+      //   console.log(item.prop)
+      // })
+      // console.log(this.hideColumnsOptions)
+      this.hideColumnsOptions = columnList.map(item => {
+        return item.prop
+      })
+      console.log(this.hideColumnsOptions)
+      //  = kk
+      // this.hideColumnsOptions.push.apply(kk)
+      // console.log(kk, this.hideColumnsOptions)
+      // const props = { columnList, kk }
+      }
+    }
+  },
   methods: {
     renderTable(h) {
       const { $attrs, $listeners } = this
@@ -68,24 +93,10 @@ export default {
     },
     renderColumns(h) {
       const columns = []
-      // this.columns.forEach((column) => {
-      // console.log(!this.hideColumnsOptions.includes(column.prop))
-      //   if (!this.hideColumnsOptions.includes(column.prop)) {
-      //     continue
-      //   }
-      //   if (column.type === 'expand') {
-      //     columns.push(this.renderColumnForExpand(h, column))
-      //   } else if (column.type === 'operate') {
-      //     columns.push(this.renderColumnForOPerate(h, column))
-      //   } else {
-      //     columns.push(this.renderColumn(h, column))
-      //   }
-      // })
       for (let index = 0; index < this.columns.length; index++) {
         if (!this.hideColumnsOptions.includes(this.columns[index].prop)) {
           continue
         }
-        console.log(this.hideColumnsOptions.includes(this.columns[index].prop))
         if (this.columns[index].type === 'expand') {
           columns.push(this.renderColumnForExpand(h, this.columns[index]))
         } else if (this.columns[index].type === 'operate') {
@@ -186,8 +197,16 @@ export default {
       // this.hideColumnsOptions = columnsList.map(item => {
       //   return item.prop || item.type
       // })
+      // this.hideColumnsOptions = columnList.find(item => {
+      //   console.log(item.prop)
+      // })
       // console.log(this.hideColumnsOptions)
-      const props = { columnList }
+      // const kk = columnList.map(item => {
+      //   return item.prop
+      // })
+      // this.hideColumnsOptions.push.apply(kk)
+      // console.log(kk, this.hideColumnsOptions)
+      const props = { columnList, hideColumnsOptions : this.hideColumnsOptions }
       return h(
         'TrendsTable',
         {
