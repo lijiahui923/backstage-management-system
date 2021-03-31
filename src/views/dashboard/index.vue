@@ -9,7 +9,7 @@
     </MyInput>
     <CTable
       ref="CTable"
-      :height="800"
+      :height="500"
       :columns="columns"
       :data="tableData"
       :pagination-config="paginationConfig"
@@ -205,6 +205,9 @@ export default {
     },
     sortMethod(a, b) {
       console.log(a, b)
+    },
+    changeIsFalse(val) {
+      console.log(val)
     }
   }
 }

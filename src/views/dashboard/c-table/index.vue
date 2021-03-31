@@ -1,6 +1,7 @@
 <script>
 import methods from './mixins/table-methods'
 import CPagination from './components/CPagination'
+import TrendsTable from './components/TrendsTable'
 const defaultProps = {
   border: true,
   'highlight-current-row': true,
@@ -8,7 +9,7 @@ const defaultProps = {
 }
 export default {
   name: 'CTable',
-  components: { CPagination },
+  components: { CPagination, TrendsTable },
   mixins: [methods],
   inheritAttrs: false,
   props: {
@@ -27,6 +28,8 @@ export default {
   },
   data() {
     return {
+      hideColumnOptions: [],
+      isFalse: false,
       elTableRef: 'EL_TABLE_REF'
     }
   },
@@ -105,10 +108,14 @@ export default {
           slots.push(slot)
         }
       }
+      console.log(!!this.hideColumnOptions.includes(_column.prop))
       return h(
         'el-table-column',
         {
           props: _column,
+          'class': {
+            isHide: !!this.hideColumnOptions.includes(_column.prop)
+          },
           scopedSlots: Object.assign({}, scopedSlots, scopedSlotsList)
         },
         slots
@@ -158,12 +165,29 @@ export default {
           }
         )
       }
+    },
+    // 渲染隐藏列
+    renderPopver(h) {
+      const columnList = this.columns.filter(item => !item.type && item.label)
+      const props = { columnList }
+      return h(
+        'TrendsTable',
+        {
+          props,
+          on: {
+            changeIsFalse: (val) => {
+              this.hideColumnOptions = val
+            }
+          }
+        }
+      )
     }
   },
   render(h) {
     return h(
       'div',
       [
+        this.renderPopver(h),
         this.renderTable(h),
         this.renderPagination(h)
       ]
@@ -171,3 +195,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.isHide {
+  display: none;
+}
+</style>

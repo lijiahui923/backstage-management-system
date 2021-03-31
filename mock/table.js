@@ -14,7 +14,7 @@ const data = Mock.mock({
 module.exports = [
   {
     url: '/vue-admin-template/table/list',
-    type: 'post',
+    type: 'get',
     response: config => {
       const { currentPage, pages } = config.query
       const dataList = data.items
