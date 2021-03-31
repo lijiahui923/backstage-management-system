@@ -9,6 +9,7 @@
     </MyInput>
     <CTable
       ref="CTable"
+      :height="800"
       :columns="columns"
       :data="tableData"
       :pagination-config="paginationConfig"
@@ -25,6 +26,11 @@
       <div slot="append">
         <div>99999999999</div>
       </div>
+      <template v-slot:status="{ row }">
+        <el-button v-if="row.status === 'draft'" type="success" icon="el-icon-check" circle />
+        <el-button v-else-if="row.status === 'deleted'" type="info" icon="el-icon-message" circle />
+        <el-button v-else type="warning" icon="el-icon-star-off" circle />
+      </template>
       <template v-slot:input>
         <MyInput v-model="name" :disabled="disabled">
           <template slot="prepend">Http://</template>
@@ -62,7 +68,7 @@
 </template>
 
 <script>
-import { userInfoApi } from '@/api/user'
+import { getList } from '@/api/table'
 import MyInput from './MyInput'
 import CTable from './c-table'
 export default {
@@ -80,12 +86,32 @@ export default {
           type: 'expand'
         },
         {
-          label: '姓名',
-          prop: 'name'
+          type: 'index'
         },
         {
-          label: '年龄',
-          prop: 'age'
+          label: '编号',
+          prop: 'id'
+        },
+        {
+          label: '作者',
+          prop: 'author'
+        },
+        {
+          label: '时间',
+          prop: 'display_time'
+        },
+        {
+          label: '页数',
+          prop: 'pageviews'
+        },
+        {
+          label: '状态',
+          prop: 'status',
+          slots: 'status'
+        },
+        {
+          label: '书名',
+          prop: 'title'
         },
         {
           slots: 'input',
@@ -106,10 +132,14 @@ export default {
         {
           name: '王小虎',
           age: 18
+        },
+        {
+          name: '李浩德',
+          age: 31
         }
       ],
       paginationConfig: {
-        total: 30,
+        total: 0,
         pages: 10,
         currentPage: 1
       },
@@ -134,19 +164,26 @@ export default {
     }
   },
   created() {
-    // this.getUserInfo()
+    this.getList()
   },
   methods: {
-    getUserInfo() {
-      userInfoApi({ service: 'quotations' }).then(res => {
-        console.log(res)
+    getList() {
+      const parmas = {
+        currentPage: this.paginationConfig.currentPage,
+        pages: this.paginationConfig.pages
+      }
+      getList(parmas).then(res => {
+        this.tableData = res.data.rows
+        this.paginationConfig.total = res.data.total
       })
     },
     selectCurrentRow(selection, row) {
       console.log(this.name, selection, row, this.$refs.CTable)
     },
-    pageChange(pageNum, pagePage) {
-      console.log(pageNum, pagePage)
+    pageChange(currentPage, pages) {
+      this.paginationConfig.pages = pages
+      this.paginationConfig.currentPage = currentPage
+      this.getList()
     },
     clickBtn(row, $index) {
       console.log(row.name, $index)
@@ -165,6 +202,9 @@ export default {
           console.log(3)
         }
       }
+    },
+    sortMethod(a, b) {
+      console.log(a, b)
     }
   }
 }

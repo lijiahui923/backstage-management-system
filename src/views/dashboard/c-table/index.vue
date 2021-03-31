@@ -23,9 +23,7 @@ export default {
     paginationConfig: {
       type: Object,
       default: () => {}
-    },
-    // eslint-disable-next-line vue/require-default-prop
-    height: [String, Number]
+    }
   },
   data() {
     return {
@@ -79,7 +77,7 @@ export default {
       return columns
     },
     renderColumn(h, column) {
-      const _column = Object.assign({}, column)
+      const _column = Object.assign({}, column, { 'show-overflow-tooltip': true })
       // 如果类型等于selection复选框固定在左边
       if (_column.type === 'selection') {
         _column.label = ''
@@ -135,6 +133,7 @@ export default {
     // 渲染操作列
     renderColumnForOPerate(h, column) {
       const self = this
+      !column.fixed && (column.fixed = 'right')
       const props = Object.assign({}, column, { label: '操作 ' })
       return h(
         'el-table-column',

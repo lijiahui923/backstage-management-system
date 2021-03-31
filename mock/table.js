@@ -1,7 +1,7 @@
 const Mock = require('mockjs')
 
 const data = Mock.mock({
-  'items|30': [{
+  'items|25': [{
     id: '@id',
     title: '@sentence(10, 20)',
     'status|1': ['published', 'draft', 'deleted'],
@@ -14,16 +14,25 @@ const data = Mock.mock({
 module.exports = [
   {
     url: '/vue-admin-template/table/list',
-    type: 'get',
+    type: 'post',
     response: config => {
-      const items = data.items
+      const { currentPage, pages } = config.query
+      const dataList = data.items
+      var [index, size, total] = [currentPage, pages, dataList.length]
+      var len = total / size
+      var totalPages = len - parseInt(len) > 0 ? parseInt(len) + 1 : len
+      var newDataList = dataList.slice((index - 1) * size, (index) * size)
       return {
         code: 20000,
         data: {
-          total: items.length,
-          items: items
+          'pageIndex': index,
+          'pageSize': size,
+          'rows': newDataList,
+          'total': total,
+          'totalPages': totalPages
         }
       }
     }
   }
 ]
+
