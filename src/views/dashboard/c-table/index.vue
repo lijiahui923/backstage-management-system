@@ -28,13 +28,29 @@ export default {
   },
   data() {
     return {
-      hideColumnsOptions: [],
+      showColumnsOptions: [],
+      selfCOlumns: [],
       isFalse: false,
       elTableRef: 'EL_TABLE_REF'
     }
   },
+  watch: {
+    columns: {
+      immediate: true,
+      handler(columns) {
+        const props = columns.map(item => {
+          if (!item.prop) {
+            item.prop = item.type || item.slots
+          }
+          return item.prop
+        })
+        this.showColumnsOptions = props
+      }
+    }
+  },
   methods: {
     renderTable(h) {
+      console.log('renderTable')
       const { $attrs, $listeners } = this
       const columns = this.renderColumns(h)
       const $this = this
@@ -67,25 +83,14 @@ export default {
       )
     },
     renderColumns(h) {
+      console.log('renderColumns')
       const columns = []
-      // this.columns.forEach((column) => {
-      // console.log(!this.hideColumnsOptions.includes(column.prop))
-      //   if (!this.hideColumnsOptions.includes(column.prop)) {
-      //     continue
-      //   }
-      //   if (column.type === 'expand') {
-      //     columns.push(this.renderColumnForExpand(h, column))
-      //   } else if (column.type === 'operate') {
-      //     columns.push(this.renderColumnForOPerate(h, column))
-      //   } else {
-      //     columns.push(this.renderColumn(h, column))
-      //   }
-      // })
+      console.log(this.showColumnsOptions)
       for (let index = 0; index < this.columns.length; index++) {
-        if (!this.hideColumnsOptions.includes(this.columns[index].prop)) {
+        if (!this.showColumnsOptions.includes(this.columns[index].prop)) {
+          console.log(11111111)
           continue
         }
-        console.log(this.hideColumnsOptions.includes(this.columns[index].prop))
         if (this.columns[index].type === 'expand') {
           columns.push(this.renderColumnForExpand(h, this.columns[index]))
         } else if (this.columns[index].type === 'operate') {
@@ -97,6 +102,7 @@ export default {
       return columns
     },
     renderColumn(h, column) {
+      console.log('renderColumn')
       const _column = Object.assign({}, column, { 'show-overflow-tooltip': true })
       // 如果类型等于selection复选框固定在左边
       if (_column.type === 'selection') {
@@ -136,6 +142,7 @@ export default {
     },
     // 渲染展开列
     renderColumnForExpand(h, column) {
+      console.log('renderColumnForExpand')
       const self = this
       const props = Object.assign({}, column, { label: '' })
       return h(
@@ -152,9 +159,10 @@ export default {
     },
     // 渲染操作列
     renderColumnForOPerate(h, column) {
+      console.log('renderColumnForOPerate')
       const self = this
       !column.fixed && (column.fixed = 'right')
-      const props = Object.assign({}, column, { label: '操作 ' })
+      const props = Object.assign({}, column, { label: '操作 ' }, { 'show-overflow-tooltip': false })
       return h(
         'el-table-column',
         {
@@ -169,6 +177,7 @@ export default {
     },
     // 分页如果this.paginationConfig就渲染
     renderPagination(h) {
+      console.log('renderPagination')
       if (this.paginationConfig) {
         return h(
           'CPagination',
@@ -181,21 +190,16 @@ export default {
     },
     // 渲染隐藏列
     renderPopver(h) {
+      console.log('renderPopver')
       const columnList = this.columns.filter(item => !item.type && item.label)
-      // console.log(this.hideColumnsOptions)
-      // this.hideColumnsOptions = columnsList.map(item => {
-      //   return item.prop || item.type
-      // })
-      // console.log(this.hideColumnsOptions)
-      const props = { columnList }
+      const props = { columnList, checked: this.showColumnsOptions }
       return h(
         'TrendsTable',
         {
           props,
           on: {
             changeIsFalse: (val) => {
-              this.hideColumnsOptions = val
-              console.log(this.hideColumnsOptions)
+              this.showColumnsOptions = val
             }
           }
         }

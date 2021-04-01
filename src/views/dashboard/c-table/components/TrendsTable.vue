@@ -31,6 +31,10 @@ export default {
     columnList: {
       type: Array,
       default: () => []
+    },
+    checked: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -43,6 +47,12 @@ export default {
   },
   computed: {},
   watch: {
+    checked: {
+      immediate: true,
+      handler(checked) {
+        this.tableList = checked
+      }
+    },
     columnList: {
       immediate: true,
       handler(list) {
