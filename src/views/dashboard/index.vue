@@ -23,9 +23,9 @@
           </el-form-item>
         </el-form>
       </template>
-      <div slot="append">
+      <template slot="append">
         <div>99999999999</div>
-      </div>
+      </template>
       <template v-slot:status="{ row }">
         <el-button v-if="row.status === 'draft'" type="success" icon="el-icon-check" circle />
         <el-button v-else-if="row.status === 'deleted'" type="info" icon="el-icon-message" circle />
@@ -118,26 +118,17 @@ export default {
           label: '输入框',
           prop: 'name'
         },
-        // {
-        //   slots: {
-        //     default: 'select',
-        //     header: 'selectHeader'
-        //   }
-        // },
+        {
+          slots: {
+            default: 'select',
+            header: 'selectHeader'
+          }
+        },
         {
           type: 'operate'
         }
       ],
-      tableData: [
-        {
-          name: '王小虎',
-          age: 18
-        },
-        {
-          name: '李浩德',
-          age: 31
-        }
-      ],
+      tableData: [],
       paginationConfig: {
         total: 0,
         pages: 10,

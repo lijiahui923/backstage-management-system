@@ -38,23 +38,29 @@ export default {
     columns: {
       immediate: true,
       handler(columns) {
+        console.log('watch=======columns')
         const props = columns.map(item => {
           if (!item.prop) {
             item.prop = item.type || item.slots
+            item.label = item.type || item.slots
           }
           return item.prop
         })
+        // console.log('watch---columns', props)
         this.showColumnsOptions = props
       }
     }
   },
+  updated() {
+    console.log('update------------------------------------')
+  },
   methods: {
     renderTable(h) {
-      console.log('renderTable')
       const { $attrs, $listeners } = this
       const columns = this.renderColumns(h)
       const $this = this
       const props = Object.assign(defaultProps, $attrs, { data: this.data })
+      console.log(props)
       const slots = []
       for (const s in this.$slots) {
         slots.push(
@@ -76,19 +82,17 @@ export default {
           on: {
             ...$listeners
           },
-          scopedSlots: $this.$scopedSlots,
+          //   scopedSlots: $this.$scopedSlots,
           ref: $this.elTableRef
         },
         [...slots, ...columns]
       )
     },
     renderColumns(h) {
-      console.log('renderColumns')
       const columns = []
-      console.log(this.showColumnsOptions)
       for (let index = 0; index < this.columns.length; index++) {
+        console.log(this.showColumnsOptions.includes(this.columns[index].prop))
         if (!this.showColumnsOptions.includes(this.columns[index].prop)) {
-          console.log(11111111)
           continue
         }
         if (this.columns[index].type === 'expand') {
@@ -99,15 +103,14 @@ export default {
           columns.push(this.renderColumn(h, this.columns[index]))
         }
       }
+      console.log(columns)
       return columns
     },
     renderColumn(h, column) {
-      console.log('renderColumn')
       const _column = Object.assign({}, column, { 'show-overflow-tooltip': true })
       // 如果类型等于selection复选框固定在左边
       if (_column.type === 'selection') {
         _column.label = ''
-        !_column.fixed && (_column.fixed = 'left')
       }
       const scopedSlots = {}; const scopedSlotsList = {}; const slots = []
       // 如果类型是一个对象说明有多个插槽需要循环渲染，其他的就是一个渲染默认的
@@ -135,14 +138,14 @@ export default {
         'el-table-column',
         {
           props: _column,
-          scopedSlots: Object.assign({}, scopedSlots, scopedSlotsList)
+          scopedSlots: Object.assign({}, scopedSlots, scopedSlotsList),
+          key: _column.prop
         },
         slots
       )
     },
     // 渲染展开列
     renderColumnForExpand(h, column) {
-      console.log('renderColumnForExpand')
       const self = this
       const props = Object.assign({}, column, { label: '' })
       return h(
@@ -153,13 +156,13 @@ export default {
             default: props => {
               return self.$scopedSlots['expand'](props)
             }
-          }
+          },
+          key: 'expand-column'
         }
       )
     },
     // 渲染操作列
     renderColumnForOPerate(h, column) {
-      console.log('renderColumnForOPerate')
       const self = this
       !column.fixed && (column.fixed = 'right')
       const props = Object.assign({}, column, { label: '操作 ' }, { 'show-overflow-tooltip': false })
@@ -171,13 +174,13 @@ export default {
             default: props => {
               return self.$scopedSlots.operate(props)
             }
-          }
+          },
+          key: 'operate-column'
         }
       )
     },
     // 分页如果this.paginationConfig就渲染
     renderPagination(h) {
-      console.log('renderPagination')
       if (this.paginationConfig) {
         return h(
           'CPagination',
@@ -190,7 +193,6 @@ export default {
     },
     // 渲染隐藏列
     renderPopver(h) {
-      console.log('renderPopver')
       const columnList = this.columns.filter(item => !item.type && item.label)
       const props = { columnList, checked: this.showColumnsOptions }
       return h(
@@ -200,6 +202,9 @@ export default {
           on: {
             changeIsFalse: (val) => {
               this.showColumnsOptions = val
+              this.$nextTick(() => {
+                this.$refs[this.elTableRef].doLayout()
+              })
             }
           }
         }
@@ -207,6 +212,7 @@ export default {
     }
   },
   render(h) {
+    console.log('render=====')
     return h(
       'div',
       [

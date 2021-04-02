@@ -1,7 +1,7 @@
 <template>
   <div style="float: right">
-    <el-popover placement="bottom" title="隐藏/显示列" trigger="click">
-      <el-checkbox-group v-model="tableList" class="el-ckeckbox-list" @change="checkboxChange">
+    <el-popover v-model="visible" placement="bottom" title="隐藏/显示列" trigger="click">
+      <el-checkbox-group v-model="tableList" class="el-ckeckbox-list">
         <el-checkbox
           v-for="(item, index) in checkList"
           :key="index"
@@ -10,6 +10,7 @@
           {{ item.label }}
         </el-checkbox>
       </el-checkbox-group>
+      <el-button @click="handleConfirm">确定</el-button>
       <el-button
         slot="reference"
         type="button"
@@ -42,7 +43,8 @@ export default {
       tableList: [],
       checkList: [],
       result: [],
-      list: []
+      list: [],
+      visible: false
     }
   },
   computed: {},
@@ -64,7 +66,14 @@ export default {
   created() {},
   methods: {
     checkboxChange(val) {
+        console.log('checkboxChange显示隐藏列', val, this.tableList)
       this.$emit('changeIsFalse', val)
+    },
+    handleConfirm() {
+        this.$emit('input', this.tableList)
+        this.$emit('confirm', this.tableList)
+         this.$emit('changeIsFalse', this.tableList)
+         this.visible = false
     }
   }
 }

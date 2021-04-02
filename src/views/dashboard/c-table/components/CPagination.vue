@@ -46,7 +46,7 @@ export default {
       immediate: true,
       deep: true,
       handler({ total, currentPage, pages }) {
-        const props = Object.assign({}, { total, currentPage, pages })
+        let props = Object.assign({}, { total, currentPage, pages })
         if (typeof total === 'string') {
           this.paginationProps.total = Number(total)
         }
@@ -57,7 +57,7 @@ export default {
     }
   },
   created() {
-    const { $attrs } = this
+    let { $attrs } = this
     this.pNum = $attrs.currentPage
     this.pSize = $attrs.pages
   },
