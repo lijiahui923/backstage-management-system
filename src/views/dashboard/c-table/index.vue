@@ -7,6 +7,10 @@ const defaultProps = {
   'highlight-current-row': true,
   'header-cell-style': { 'background-color': '#f8f8f9' }
 }
+const defaultColumnsProps = {
+  'show-overflow-tooltip': true,
+  'min-width': 100
+}
 export default {
   name: 'CTable',
   components: { CPagination, TrendsTable },
@@ -24,6 +28,10 @@ export default {
     paginationConfig: {
       type: Object,
       default: () => {}
+    },
+    columnsConfig: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -38,21 +46,22 @@ export default {
     columns: {
       immediate: true,
       handler(columns) {
-        console.log('watch=======columns')
         const props = columns.map(item => {
           if (!item.prop) {
-            item.prop = item.type || item.slots
-            item.label = item.type || item.slots
+            item.prop = item.type
+            item.label = item.type
+          }
+          if(item.type === 'operate') {
+            item.label = '操作'
+          }
+          if(item.type === 'expand') {
+            item.label = '>'
           }
           return item.prop
         })
-        // console.log('watch---columns', props)
         this.showColumnsOptions = props
       }
     }
-  },
-  updated() {
-    console.log('update------------------------------------')
   },
   methods: {
     renderTable(h) {
@@ -60,7 +69,6 @@ export default {
       const columns = this.renderColumns(h)
       const $this = this
       const props = Object.assign(defaultProps, $attrs, { data: this.data })
-      console.log(props)
       const slots = []
       for (const s in this.$slots) {
         slots.push(
@@ -76,9 +84,7 @@ export default {
       return h(
         'el-table',
         {
-          props: {
-            ...props
-          },
+          props,
           on: {
             ...$listeners
           },
@@ -91,26 +97,26 @@ export default {
     renderColumns(h) {
       const columns = []
       for (let index = 0; index < this.columns.length; index++) {
-        console.log(this.showColumnsOptions.includes(this.columns[index].prop))
         if (!this.showColumnsOptions.includes(this.columns[index].prop)) {
           continue
         }
         if (this.columns[index].type === 'expand') {
           columns.push(this.renderColumnForExpand(h, this.columns[index]))
         } else if (this.columns[index].type === 'operate') {
-          columns.push(this.renderColumnForOPerate(h, this.columns[index]))
+          columns.push(this.renderColumnForOperate(h, this.columns[index]))
         } else {
           columns.push(this.renderColumn(h, this.columns[index]))
         }
       }
-      console.log(columns)
       return columns
     },
     renderColumn(h, column) {
-      const _column = Object.assign({}, column, { 'show-overflow-tooltip': true })
-      // 如果类型等于selection复选框固定在左边
+      const _column = Object.assign(column, defaultColumnsProps, this.columnsConfig)
       if (_column.type === 'selection') {
         _column.label = ''
+      }
+      if (_column.type === 'index') {
+        _column.label = '#'
       }
       const scopedSlots = {}; const scopedSlotsList = {}; const slots = []
       // 如果类型是一个对象说明有多个插槽需要循环渲染，其他的就是一个渲染默认的
@@ -138,8 +144,7 @@ export default {
         'el-table-column',
         {
           props: _column,
-          scopedSlots: Object.assign({}, scopedSlots, scopedSlotsList),
-          key: _column.prop
+          scopedSlots: Object.assign({}, scopedSlots, scopedSlotsList)
         },
         slots
       )
@@ -156,13 +161,12 @@ export default {
             default: props => {
               return self.$scopedSlots['expand'](props)
             }
-          },
-          key: 'expand-column'
+          }
         }
       )
     },
     // 渲染操作列
-    renderColumnForOPerate(h, column) {
+    renderColumnForOperate(h, column) {
       const self = this
       !column.fixed && (column.fixed = 'right')
       const props = Object.assign({}, column, { label: '操作 ' }, { 'show-overflow-tooltip': false })
@@ -174,8 +178,7 @@ export default {
             default: props => {
               return self.$scopedSlots.operate(props)
             }
-          },
-          key: 'operate-column'
+          }
         }
       )
     },
@@ -193,15 +196,15 @@ export default {
     },
     // 渲染隐藏列
     renderPopver(h) {
-      const columnList = this.columns.filter(item => !item.type && item.label)
-      const props = { columnList, checked: this.showColumnsOptions }
+      const props = { columnList: this.columns, checked: this.showColumnsOptions }
       return h(
         'TrendsTable',
         {
           props,
           on: {
-            changeIsFalse: (val) => {
+            change: (val) => {
               this.showColumnsOptions = val
+              // 隐藏列的时候防治表格错位
               this.$nextTick(() => {
                 this.$refs[this.elTableRef].doLayout()
               })
@@ -212,7 +215,6 @@ export default {
     }
   },
   render(h) {
-    console.log('render=====')
     return h(
       'div',
       [

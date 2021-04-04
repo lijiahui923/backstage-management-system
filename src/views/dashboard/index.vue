@@ -116,16 +116,19 @@ export default {
         {
           slots: 'input',
           label: '输入框',
-          prop: 'name'
+          prop: 'name',
+          width: 200
         },
         {
           slots: {
             default: 'select',
             header: 'selectHeader'
-          }
+          },
+          width: 200
         },
         {
-          type: 'operate'
+          type: 'operate',
+          width: 200
         }
       ],
       tableData: [],
