@@ -1,6 +1,11 @@
 <template>
   <div style="float: right">
-    <el-popover v-model="visible" placement="bottom" title="隐藏/显示列">
+    <el-popover
+      v-model="visible"
+      placement="bottom"
+      title="隐藏/显示列"
+      popper-class="col-popover"
+    >
       <el-checkbox-group v-model="tableList" class="el-ckeckbox-list">
         <el-checkbox
           v-for="(item, index) in checkList"
@@ -72,17 +77,22 @@ export default {
       this.$emit('change', val)
     },
     handleConfirm() {
-        this.$emit('input', this.tableList)
-        this.$emit('confirm', this.tableList)
-        this.$emit('change', this.tableList)
-        this.visible = false
+      this.$emit('input', this.tableList)
+      this.$emit('confirm', this.tableList)
+      this.$emit('change', this.tableList)
+      this.visible = false
     }
   }
 }
 </script>
 <style lang='scss' scoped>
+.col-popover {
+  width: 124px;
+  min-width: 124px;
+  max-height: 400px;
+}
 .el-ckeckbox-list {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 </style>

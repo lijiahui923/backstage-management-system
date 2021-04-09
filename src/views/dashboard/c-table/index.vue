@@ -1,5 +1,6 @@
 <script>
 import methods from './mixins/table-methods'
+import storageColumn from './mixins/storage-column'
 import CPagination from './components/CPagination'
 import TrendsTable from './components/TrendsTable'
 const defaultProps = {
@@ -14,7 +15,7 @@ const defaultColumnsProps = {
 export default {
   name: 'CTable',
   components: { CPagination, TrendsTable },
-  mixins: [methods],
+  mixins: [methods, storageColumn],
   inheritAttrs: false,
   props: {
     columns: {
@@ -32,6 +33,16 @@ export default {
     columnsConfig: {
       type: Object,
       default: () => {}
+    },
+    // 是否需要显示隐藏
+    visibleConfig: {
+      type: Boolean,
+      default: true
+    },
+    // 显示隐藏需要配置唯一标识
+    keyId: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -51,15 +62,19 @@ export default {
             item.prop = item.type
             item.label = item.type
           }
-          if(item.type === 'operate') {
+          if (item.type === 'operate') {
             item.label = '操作'
           }
-          if(item.type === 'expand') {
+          if (item.type === 'expand') {
             item.label = '>'
           }
           return item.prop
         })
         this.showColumnsOptions = props
+        const visibleCol = this.getStorageVisibleColumns()
+        if (visibleCol) {
+          this.showColumnsOptions = visibleCol
+        }
       }
     }
   },
@@ -86,9 +101,13 @@ export default {
         {
           props,
           on: {
-            ...$listeners
+            ...$listeners,
+            // 当拖动表头改变了列的宽度的时候会触发该事件
+            'header-dragend': (newWidth, oldWidth, column) => {
+              $this.$emit('header-dragend', newWidth, oldWidth, column)
+              $this.storageColumnsWidth({ [column.property]: newWidth })
+            }
           },
-          //   scopedSlots: $this.$scopedSlots,
           ref: $this.elTableRef
         },
         [...slots, ...columns]
@@ -97,15 +116,20 @@ export default {
     renderColumns(h) {
       const columns = []
       for (let index = 0; index < this.columns.length; index++) {
-        if (!this.showColumnsOptions.includes(this.columns[index].prop)) {
+        const columnConf = this.columns[index]
+        if (!this.showColumnsOptions.includes(columnConf.prop)) {
           continue
         }
-        if (this.columns[index].type === 'expand') {
-          columns.push(this.renderColumnForExpand(h, this.columns[index]))
-        } else if (this.columns[index].type === 'operate') {
-          columns.push(this.renderColumnForOperate(h, this.columns[index]))
+        const storageWidth = this.getStorageColumnsWidth()[columnConf.prop]
+        if (storageWidth) {
+          columnConf.width = storageWidth
+        }
+        if (columnConf.type === 'expand') {
+          columns.push(this.renderColumnForExpand(h, columnConf))
+        } else if (columnConf.type === 'operate') {
+          columns.push(this.renderColumnForOperate(h, columnConf))
         } else {
-          columns.push(this.renderColumn(h, this.columns[index]))
+          columns.push(this.renderColumn(h, columnConf))
         }
       }
       return columns
@@ -161,7 +185,8 @@ export default {
             default: props => {
               return self.$scopedSlots['expand'](props)
             }
-          }
+          },
+          key: column.prop
         }
       )
     },
@@ -176,9 +201,10 @@ export default {
           props,
           scopedSlots: {
             default: props => {
-              return self.$scopedSlots.operate(props)
+              return self.$scopedSlots['operate'](props)
             }
-          }
+          },
+          key: column.prop
         }
       )
     },
@@ -196,6 +222,7 @@ export default {
     },
     // 渲染隐藏列
     renderPopver(h) {
+      if (!this.visibleConfig) return
       const props = { columnList: this.columns, checked: this.showColumnsOptions }
       return h(
         'TrendsTable',
@@ -204,6 +231,7 @@ export default {
           on: {
             change: (val) => {
               this.showColumnsOptions = val
+              this.storageVisibleColumns(val)
               // 隐藏列的时候防治表格错位
               this.$nextTick(() => {
                 this.$refs[this.elTableRef].doLayout()

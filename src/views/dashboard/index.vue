@@ -9,9 +9,11 @@
     </MyInput>
     <CTable
       ref="CTable"
+      key-id="CTable"
       :height="500"
       :columns="columns"
       :data="tableData"
+      :visible-config="false"
       :pagination-config="paginationConfig"
       @select="selectCurrentRow"
       @pageChange="pageChange"
@@ -196,12 +198,6 @@ export default {
           console.log(3)
         }
       }
-    },
-    sortMethod(a, b) {
-      console.log(a, b)
-    },
-    changeIsFalse(val) {
-      console.log(val)
     }
   }
 }
