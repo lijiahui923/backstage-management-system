@@ -13,7 +13,6 @@
       :height="500"
       :columns="columns"
       :data="tableData"
-      :visible-config="false"
       :pagination-config="paginationConfig"
       @select="selectCurrentRow"
       @pageChange="pageChange"
