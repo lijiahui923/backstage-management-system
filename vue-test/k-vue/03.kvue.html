@@ -7,14 +7,18 @@
     <title>手写vue</title>
 </head>
 <body>
-    <div id="app">{{counter}}</div>
+    <div id="app">
+        <p k-text="counter"></p>
+        <p k-html="desc"></p>
+    </div>
     <!-- <script src="../../node_modules/vue/dist/vue.js"></script> -->
     <script src="./kvue.js"></script>
     <script>
         const app = new KVue({
             el: '#app',
             data: {
-                counter: 1
+                counter: 1,
+                desc: '<span style="color:red">1111</span>'
             }
         })
         setInterval(() => {
